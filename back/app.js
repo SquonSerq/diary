@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('start.db');
+var db = new sqlite3.Database('./db/start.db');
 
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
@@ -15,7 +15,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.set('db', db);
+db.serialize(() => {
+	db.run("CREATE TABLE IF NOT EXISTS notes (date TEXT, note_text TEXT)");
+})
 
 app.use(logger('dev'));
 app.use(express.json());
